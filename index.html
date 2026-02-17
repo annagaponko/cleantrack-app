@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#21808D">
+    <meta name="description" content="Система управления уборкой недвижимости">
+    <title>CleanTrack - Управление уборкой</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CleanTrack">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-400);
+            --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            font-size: var(--font-size-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--color-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            padding: var(--space-16) var(--space-20);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .header-icon {
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: var(--space-12) var(--space-8);
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .content {
+            flex: 1;
+            padding: var(--space-16);
+            overflow-y: auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-16);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-16);
+            margin-bottom: var(--space-16);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-12);
+        }
+
+        .card-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .card-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-4);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-4) var(--space-12);
+            border-radius: 999px;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .status-pending {
+            background-color: rgba(230, 129, 97, 0.15);
+            color: var(--color-warning);
+            border: 1px solid rgba(230, 129, 97, 0.25);
+        }
+
+        .status-progress {
+            background-color: rgba(33, 128, 141, 0.15);
+            color: var(--color-primary);
+            border: 1px solid rgba(33, 128, 141, 0.25);
+        }
+
+        .status-completed {
+            background-color: rgba(33, 128, 141, 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(33, 128, 141, 0.25);
+        }
+
+        .task-list {
+            list-style: none;
+            margin-top: var(--space-12);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: var(--space-8) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--space-12);
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+        }
+
+        .task-completed {
+            text-decoration: line-through;
+            color: var(--color-text-secondary);
+        }
+
+        .maid-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-12);
+            background-color: var(--color-secondary);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-8);
+        }
+
+        .maid-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .maid-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .maid-details h3 {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+        }
+
+        .maid-details p {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .message-btn {
+            padding: var(--space-8) var(--space-16);
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            max-width: 90%;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            line-height: 1;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            font-size: var(--font-size-base);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background-color: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        .form-control:focus {
+            outline: 2px solid var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .media-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: var(--space-8);
+            margin-top: var(--space-8);
+        }
+
+        .media-item {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            border-radius: var(--radius-base);
+            overflow: hidden;
+            background-color: var(--color-secondary);
+        }
+
+        .media-item img, .media-item video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-media {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            line-height: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-24);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-12);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        .stat-card {
+            background-color: var(--color-secondary);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-4);
+        }
+
+        .notification-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            margin-left: 4px;
+            animation: badgePulse 0.6s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-container {
+            background: var(--color-white);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .login-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .mode-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mode-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            background: var(--color-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-button:hover {
+            border-color: var(--color-primary);
+            background: var(--color-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 128, 141, 0.2);
+        }
+
+        .maid-select-button {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 8px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-white);
+            cursor: pointer;
+            font-size: var(--font-size-md);
+            transition: all 0.3s ease;
+        }
+
+        .maid-select-button:hover {
+            border-color: var(--color-primary);
+            background: var(--color-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="80" height="80" rx="20" fill="#21808D"/>
+                    <path d="M40 20L20 35V60H30V45H50V60H60V35L40 20Z" fill="white"/>
+                    <circle cx="40" cy="32.5" r="3.75" fill="white"/>
+                </svg>
+                <h1 style="margin-top: 20px; color: var(--color-primary);">CleanTrack</h1>
+                <p style="color: var(--color-text-secondary); margin-top: 8px;">Управление уборкой</p>
+            </div>
+            
+            <div id="modeSelection" class="mode-selection">
+                <h2 style="text-align: center; margin-bottom: 24px;">Выберите режим</h2>
+                <button class="mode-button" onclick="selectMode('admin')">
+                    <span style="font-size: 32px;">👤</span>
+                    <span style="font-weight: 600; margin-top: 8px;">Администратор</span>
+                </button>
+                <button class="mode-button" onclick="selectMode('maid')">
+                    <span style="font-size: 32px;">🧙‍♀️</span>
+                    <span style="font-weight: 600; margin-top: 8px;">Горничная</span>
+                </button>
+            </div>
+            
+            <div id="adminLogin" class="admin-login" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 24px;">Вход администратора</h2>
+                <form onsubmit="loginAdmin(event)">
+                    <div class="form-group">
+                        <label for="adminPassword">Пароль</label>
+                        <input type="password" id="adminPassword" class="form-input" placeholder="Введите пароль" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Войти</button>
+                    <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 8px;" onclick="backToModeSelection()">Назад</button>
+                </form>
+            </div>
+            
+            <div id="maidLogin" class="maid-login" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 24px;">Выберите свое имя</h2>
+                <div id="maidSelectContainer"></div>
+                <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 16px;" onclick="backToModeSelection()">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainApp" style="display: none;">
+        <header class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.2)"/>
+                    <path d="M16 8L8 14V24H12V18H20V24H24V14L16 8Z" fill="currentColor"/>
+                    <circle cx="16" cy="13" r="1.5" fill="currentColor"/>
+                </svg>
+                <h1>CleanTrack</h1>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <select id="propertySelect" onchange="switchProperty()" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.2); color: var(--color-btn-primary-text); font-size: 14px; cursor: pointer;">
+                </select>
+                <span class="header-icon" id="propertyManagementBtn" onclick="openPropertyManagement()">🏠</span>
+                <span class="header-icon" id="statsBtn" onclick="showStats()">📊</span>
+                <span class="header-icon" onclick="logout()">🚪</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('tasks')">Задания</button>
+            <button class="tab" onclick="switchTab('maids')">Горничные</button>
+            <button class="tab" onclick="switchTab('checklists')">Чек-листы</button>
+            <button class="tab" onclick="switchTab('supplies')">Расходники</button>
+            <button class="tab" onclick="switchTab('chat')">💬 Чат<span id="chatNotificationBadge" class="notification-badge" style="display: none;">0</span></button>
+        </div>
+
+        <div class="content">
+            <div id="tasks-tab" class="tab-content">
+                <button class="btn btn-primary btn-full" onclick="openNewTaskModal()">+ Создать задание</button>
+                
+                <div id="tasksList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div id="maids-tab" class="tab-content hidden">
+                <button class="btn btn-primary btn-full" onclick="openNewMaidModal()">+ Добавить горничную</button>
+                
+                <div id="maidsList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div id="checklists-tab" class="tab-content hidden">
+                <button class="btn btn-primary btn-full" onclick="openNewChecklistModal()">+ Создать чек-лист</button>
+                
+                <div id="checklistsList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div id="supplies-tab" class="tab-content hidden">
+                <button class="btn btn-primary btn-full" onclick="openNewSupplyModal()">+ Добавить расходник</button>
+                
+                <div id="suppliesList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div id="chat-tab" class="tab-content hidden">
+                <div style="display: flex; flex-direction: column; height: 100%; gap: 12px;">
+                    <div style="display: flex; gap: 8px;">
+                        <select id="chatMaidSelect" class="form-control" style="flex: 1;" onchange="switchChatMaid()">
+                            <option value="">Выберите горничную для чата</option>
+                        </select>
+                    </div>
+                    <div id="chatMessages" style="flex: 1; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 12px; background-color: var(--color-background); display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="chatInput" class="form-control" placeholder="Введите сообщение..." onkeypress="handleChatKeypress(event)" style="flex: 1;">
+                        <button class="btn btn-primary" onclick="sendChatMessage()" style="padding: 8px 16px;">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Новое задание</h2>
+                <button class="close-btn" onclick="closeModal('taskModal')">&times;</button>
+            </div>
+            <form onsubmit="createTask(event)">
+                <div class="form-group">
+                    <label class="form-label">Название задания</label>
+                    <input type="text" class="form-control" id="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Описание</label>
+                    <textarea class="form-control" id="taskDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Назначить горничную</label>
+                    <select class="form-control" id="taskMaid" required>
+                        <option value="">Выберите горничную</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Чек-лист (опционально)</label>
+                    <select class="form-control" id="taskChecklist">
+                        <option value="">Без чек-листа</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Создать задание</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="maidModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить горничную</h2>
+                <button class="close-btn" onclick="closeModal('maidModal')">&times;</button>
+            </div>
+            <form onsubmit="addMaid(event)">
+                <div class="form-group">
+                    <label class="form-label">Имя</label>
+                    <input type="text" class="form-control" id="maidName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" id="maidPhone" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="checklistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Создать чек-лист</h2>
+                <button class="close-btn" onclick="closeModal('checklistModal')">&times;</button>
+            </div>
+            <form onsubmit="createChecklist(event)">
+                <div class="form-group">
+                    <label class="form-label">Название чек-листа</label>
+                    <input type="text" class="form-control" id="checklistName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пункты чек-листа (по одному на строку)</label>
+                    <textarea class="form-control" id="checklistItems" rows="6" required placeholder="Убрать постель&#10;Пропылесосить&#10;Протереть пыль&#10;Помыть ванную&#10;Проверить технику"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Создать чек-лист</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="taskDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="detailTaskTitle"></h2>
+                <button class="close-btn" onclick="closeModal('taskDetailModal')">&times;</button>
+            </div>
+            <div id="taskDetailContent"></div>
+        </div>
+    </div>
+
+    <div id="mediaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Загрузить фото/видео</h2>
+                <button class="close-btn" onclick="closeModal('mediaModal')">&times;</button>
+            </div>
+            <form onsubmit="uploadMedia(event)">
+                <div class="form-group">
+                    <label class="form-label">Выберите файлы</label>
+                    <input type="file" class="form-control" id="mediaFiles" accept="image/*,video/*" multiple capture="environment" onchange="previewMedia()">
+                </div>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="capturePhoto()" style="flex: 1;">📷 Сделать фото</button>
+                    <button type="button" class="btn btn-secondary" onclick="captureVideo()" style="flex: 1;">🎥 Снять видео</button>
+                </div>
+                <div id="mediaPreview" class="media-preview"></div>
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 16px;">Загрузить</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cameraModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="cameraModalTitle">📷 Сделать фото</h2>
+                <button class="close-btn" onclick="closeCameraModal()">&times;</button>
+            </div>
+            <div style="position: relative;">
+                <video id="cameraPreview" autoplay playsinline style="width: 100%; border-radius: 8px; background: black;"></video>
+                <canvas id="photoCanvas" style="display: none;"></canvas>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button type="button" class="btn btn-secondary" onclick="switchCamera()" style="flex: 1;">🔄 Переключить</button>
+                <button type="button" class="btn btn-primary" onclick="takePhoto()" style="flex: 2;">📸 Снять</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editChecklistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактировать чек-лист</h2>
+                <button class="close-btn" onclick="closeModal('editChecklistModal')">&times;</button>
+            </div>
+            <form onsubmit="saveChecklistEdit(event)">
+                <input type="hidden" id="editChecklistId">
+                <div class="form-group">
+                    <label class="form-label">Название чек-листа</label>
+                    <input type="text" class="form-control" id="editChecklistName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пункты чек-листа (по одному на строку)</label>
+                    <textarea class="form-control" id="editChecklistItems" rows="10" required placeholder="Убрать постель&#10;Пропылесосить&#10;Протереть пыль"></textarea>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить изменения</button>
+                    <button type="button" class="btn btn-secondary" onclick="deleteChecklist()">🗑️ Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="propertyManagementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Управление объектами</h2>
+                <button class="close-btn" onclick="closeModal('propertyManagementModal')">&times;</button>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="openAddPropertyModal()" style="margin-bottom: 16px;">+ Добавить объект</button>
+            <div id="propertiesManagementList"></div>
+        </div>
+    </div>
+
+    <div id="addPropertyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить объект</h2>
+                <button class="close-btn" onclick="closeModal('addPropertyModal')">&times;</button>
+            </div>
+            <form onsubmit="addProperty(event)">
+                <div class="form-group">
+                    <label class="form-label">Название объекта</label>
+                    <input type="text" class="form-control" id="propertyName" required placeholder="Квартира 143">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Адрес</label>
+                    <input type="text" class="form-control" id="propertyAddress" required placeholder="ул. Ленина, 15">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editPropertyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактировать объект</h2>
+                <button class="close-btn" onclick="closeModal('editPropertyModal')">&times;</button>
+            </div>
+            <form onsubmit="savePropertyEdit(event)">
+                <input type="hidden" id="editPropertyId">
+                <div class="form-group">
+                    <label class="form-label">Название объекта</label>
+                    <input type="text" class="form-control" id="editPropertyName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Адрес</label>
+                    <input type="text" class="form-control" id="editPropertyAddress" required>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" onclick="deleteProperty()">🗑️ Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="supplyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить расходник</h2>
+                <button class="close-btn" onclick="closeModal('supplyModal')">&times;</button>
+            </div>
+            <form onsubmit="addSupply(event)">
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-control" id="supplyName" required placeholder="Туалетная бумага, мыло, шампунь...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Количество</label>
+                    <input type="number" class="form-control" id="supplyQuantity" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Горничная (кто добавила)</label>
+                    <select class="form-control" id="supplyMaid" required>
+                        <option value="">Выберите горничную</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Примечание (опционально)</label>
+                    <textarea class="form-control" id="supplyNote" rows="2" placeholder="Срочно, заканчивается..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Добавить в список</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let maids = [];
+        let checklists = [];
+        let supplies = [];
+        let messages = [];
+        let mediaReports = [];
+        let currentMediaTaskId = null;
+        let currentPropertyId = 1;
+        let currentChatMaidId = null;
+        let properties = [];
+        let nextPropertyId = 1;
+        
+        let currentUser = null;
+        let userRole = null;
+        const ADMIN_PASSWORD = 'admin123';
+
+        function selectMode(mode) {
+            document.getElementById('modeSelection').style.display = 'none';
+            if (mode === 'admin') {
+                document.getElementById('adminLogin').style.display = 'block';
+            } else {
+                renderMaidSelection();
+                document.getElementById('maidLogin').style.display = 'block';
+            }
+        }
+
+        function backToModeSelection() {
+            document.getElementById('modeSelection').style.display = 'block';
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('maidLogin').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function loginAdmin(event) {
+            event.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                userRole = 'admin';
+                currentUser = 'Administrator';
+                localStorage.setItem('userRole', 'admin');
+                localStorage.setItem('currentUser', 'Administrator');
+                showMainApp();
+            } else {
+                alert('Неверный пароль!');
+            }
+        }
+
+        function renderMaidSelection() {
+            const container = document.getElementById('maidSelectContainer');
+            if (maids.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary);">Горничные еще не добавлены. Обратитесь к администратору.</p>';
+                return;
+            }
+            container.innerHTML = maids.map(maid => 
+                `<button class="maid-select-button" onclick="loginMaid(${maid.id}, '${maid.name}')">${maid.name}</button>`
+            ).join('');
+        }
+
+        function loginMaid(maidId, maidName) {
+            userRole = 'maid';
+            currentUser = maidName;
+            currentChatMaidId = maidId;
+            localStorage.setItem('userRole', 'maid');
+            localStorage.setItem('currentUser', maidName);
+            localStorage.setItem('currentMaidId', maidId);
+            showMainApp();
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            initializeApp();
+            applyRolePermissions();
+        }
+
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                userRole = null;
+                currentUser = null;
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentMaidId');
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+                backToModeSelection();
+            }
+        }
+
+        function applyRolePermissions() {
+            if (userRole === 'maid') {
+                document.getElementById('propertySelect').style.display = 'none';
+                document.getElementById('propertyManagementBtn').style.display = 'none';
+                document.getElementById('statsBtn').style.display = 'none';
+                document.querySelectorAll('.tab').forEach((tab, index) => {
+                    if (index === 1 || index === 2) {
+                        tab.style.display = 'none';
+                    }
+                });
+                const addButtons = document.querySelectorAll('.btn-primary');
+                addButtons.forEach(btn => {
+                    if (btn.textContent.includes('Добавить') || btn.textContent.includes('Создать')) {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function checkAuth() {
+            const savedRole = localStorage.getItem('userRole');
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedRole && savedUser) {
+                userRole = savedRole;
+                currentUser = savedUser;
+                if (savedRole === 'maid') {
+                    currentChatMaidId = parseInt(localStorage.getItem('currentMaidId'));
+                }
+                showMainApp();
+            }
+        }
+
+        function initializeApp() {
+            // Пытаемся загрузить данные из LocalStorage
+            const hasLocalData = loadFromLocalStorage();
+            
+            // Если нет сохраненных данных, используем примеры
+            if (!hasLocalData || properties.length === 0) {
+                properties = [
+                    { id: 1, name: 'Квартира 143', address: 'ул. Ленина, 15' },
+                    { id: 2, name: 'Квартира 2', address: 'пр. Мира, 42' },
+                    { id: 3, name: 'Квартира 3', address: 'ул. Пушкина, 8' }
+                ];
+                nextPropertyId = 4;
+            }
+
+            const sampleMaids = [
+                { id: 1, name: 'Мария Иванова', phone: '+7 (999) 123-45-67' },
+                { id: 2, name: 'Анна Петрова', phone: '+7 (999) 234-56-78' }
+            ];
+            
+            const sampleChecklists = [
+                {
+                    id: 1,
+                    name: 'Стандартная уборка',
+                    items: ['Убрать постель', 'Пропылесосить', 'Протереть пыль', 'Помыть ванную', 'Проверить технику']
+                },
+                {
+                    id: 2,
+                    name: 'Глубокая уборка',
+                    items: ['Помыть окна', 'Убрать постель', 'Пропылесосить', 'Протереть всю мебель', 'Помыть полы', 'Помыть ванную и туалет', 'Проверить технику', 'Пополнить расходники']
+                },
+                {
+                    id: 3,
+                    name: 'Кухня',
+                    items: ['Помыть плиту и духовку', 'Протереть рабочие поверхности', 'Помыть холодильник снаружи', 'Помыть раковину', 'Вынести мусор', 'Помыть полы', 'Протереть фасады шкафов', 'Помыть микроволновку']
+                },
+                {
+                    id: 4,
+                    name: 'Кабинет',
+                    items: ['Протереть рабочий стол', 'Протереть пыль с полок', 'Пропылесосить ковер', 'Протереть оргтехнику', 'Убрать паутину', 'Помыть окна', 'Протереть подоконник']
+                },
+                {
+                    id: 5,
+                    name: 'Гостиная',
+                    items: ['Пропылесосить диван и кресла', 'Протереть пыль с мебели', 'Протереть телевизор', 'Пропылесосить ковер', 'Помыть полы', 'Протереть декоративные элементы', 'Помыть окна', 'Проветрить помещение']
+                },
+                {
+                    id: 6,
+                    name: 'Спальня двуспальная',
+                    items: ['Сменить постельное белье', 'Убрать постель', 'Протереть пыль с мебели', 'Пропылесосить под кроватью', 'Помыть полы', 'Протереть зеркала', 'Проветрить комнату', 'Протереть прикроватные тумбочки']
+                },
+                {
+                    id: 7,
+                    name: 'Спальня две кровати',
+                    items: ['Сменить постельное белье на обеих кроватях', 'Убрать обе постели', 'Протереть пыль с мебели', 'Пропылесосить между кроватями', 'Помыть полы', 'Протереть зеркала', 'Проветрить комнату', 'Протереть прикроватные тумбочки']
+                }
+            ];
+
+            const sampleTasks = [
+                {
+                    id: 1,
+                    title: 'Уборка перед заселением',
+                    description: 'Подготовить к заселению в 15:00',
+                    maidId: 1,
+                    checklistId: 1,
+                    status: 'pending',
+                    propertyId: 1,
+                    createdAt: new Date('2026-02-17T10:00:00'),
+                    media: []
+                },
+                {
+                    id: 2,
+                    title: 'Генеральная уборка',
+                    description: 'Глубокая уборка после длительного проживания',
+                    maidId: 2,
+                    checklistId: 2,
+                    status: 'progress',
+                    propertyId: 2,
+                    createdAt: new Date('2026-02-17T09:00:00'),
+                    media: []
+                },
+                {
+                    id: 3,
+                    title: 'Проверка технки',
+                    description: 'Проверить работу всей техники и замки',
+                    maidId: 1,
+                    checklistId: null,
+                    status: 'completed',
+                    propertyId: 3,
+                    createdAt: new Date('2026-02-16T14:00:00'),
+                    media: []
+                }
+            ];
+
+            const sampleSupplies = [
+                {
+                    id: 1,
+                    name: 'Туалетная бумага',
+                    quantity: 3,
+                    propertyId: 1,
+                    maidId: 1,
+                    status: 'pending',
+                    note: 'Срочно нужно',
+                    createdAt: new Date('2026-02-17T11:30:00')
+                },
+                {
+                    id: 2,
+                    name: 'Жидкое мыло',
+                    quantity: 2,
+                    propertyId: 1,
+                    maidId: 2,
+                    status: 'pending',
+                    note: '',
+                    createdAt: new Date('2026-02-17T12:00:00')
+                }
+            ];
+
+            maids = sampleMaids;
+            checklists = sampleChecklists;
+            tasks = sampleTasks;
+            supplies = sampleSupplies;
+
+            updateMaidSelect();
+            updateChecklistSelect();
+            updateSupplyMaidSelect();
+            updatePropertySelect();
+            renderTasks();
+            renderMaids();
+            renderChecklists();
+            renderSupplies();
+            
+            // Сохраняем данные в LocalStorage после инициализации
+            saveToLocalStorage();
+            updateChatMaidSelect();
+            updateUnreadCount();
+            requestNotificationPermission();
+        }
+
+        // Chat Functions
+        function updateChatMaidSelect() {
+            const select = document.getElementById('chatMaidSelect');
+            select.innerHTML = '<option value="">Выберите горничную для чата</option>';
+            maids.forEach(maid => {
+                const option = document.createElement('option');
+                option.value = maid.id;
+                option.textContent = maid.name;
+                select.appendChild(option);
+            });
+        }
+
+        function switchChatMaid() {
+            const selectedId = parseInt(document.getElementById('chatMaidSelect').value);
+            if (selectedId) {
+                currentChatMaidId = selectedId;
+                renderChatMessages();
+                updateUnreadCount();
+                document.getElementById('chatInput').focus();
+            } else {
+                currentChatMaidId = null;
+                document.getElementById('chatMessages').innerHTML = '<div style="color: var(--color-text-secondary); text-align: center; margin-top: 20px;">Выберите горничную для начала чата</div>';
+            }
+        }
+
+        function sendChatMessage() {
+            if (!currentChatMaidId) {
+                alert('Пожалуйста, выберите горничную');
+                return;
+            }
+            const input = document.getElementById('chatInput');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+            const message = {
+                id: Date.now(),
+                maidId: currentChatMaidId,
+                sender: 'user',
+                text: messageText,
+                timestamp: new Date(),
+                read: false
+            };
+            messages.push(message);
+            input.value = '';
+            renderChatMessages();
+            saveToLocalStorage();
+            setTimeout(() => {
+                const maid = maids.find(m => m.id === currentChatMaidId);
+                if (maid) {
+                    const responses = [
+                        'Окей, поняла!',
+                        'Спасибо за информацию',
+                        'Готово, будет сделано',
+                        'Понимаю, спасибо!',
+                        'Всё ясно, спасибо за указание'
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const reply = {
+                        id: Date.now() + 1,
+                        maidId: currentChatMaidId,
+                        sender: 'maid',
+                        text: randomResponse,
+                        timestamp: new Date(),
+                        read: false
+                    };
+                    messages.push(reply);
+                    updateUnreadCount();
+                    notifyNewMessage(maid.name, reply.text);
+                    if (currentChatMaidId === maid.id) {
+                        renderChatMessages();
+                    }
+                    saveToLocalStorage();
+                }
+            }, 2000);
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function renderChatMessages() {
+            if (!currentChatMaidId) return;
+            const container = document.getElementById('chatMessages');
+            const maidMessages = messages.filter(m => m.maidId === currentChatMaidId);
+            if (maidMessages.length === 0) {
+                container.innerHTML = '<div style="color: var(--color-text-secondary); text-align: center; margin-top: 20px;">Нет сообщений. Начните разговор!</div>';
+                return;
+            }
+            container.innerHTML = maidMessages.map(msg => {
+                const isUser = msg.sender === 'user';
+                const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                return `<div style="display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;"><div style="max-width: 70%; background-color: ${isUser ? 'var(--color-primary)' : 'var(--color-secondary)'}; color: ${isUser ? 'var(--color-btn-primary-text)' : 'var(--color-text)'}; padding: 8px 12px; border-radius: 12px; word-wrap: break-word;"><div style="font-size: var(--font-size-sm);">${msg.text}</div><div style="font-size: var(--font-size-xs); opacity: 0.7; margin-top: 4px;">${time}</div></div></div>`;
+            }).join('');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 0);
+            markMessagesAsRead();
+        }
+
+        function updateUnreadCount() {
+            const badge = document.getElementById('chatNotificationBadge');
+            const unreadCount = messages.filter(m => m.sender === 'maid' && !m.read).length;
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function markMessagesAsRead() {
+            if (!currentChatMaidId) return;
+            messages.forEach(m => {
+                if (m.maidId === currentChatMaidId && m.sender === 'maid') {
+                    m.read = true;
+                }
+            });
+            updateUnreadCount();
+            saveToLocalStorage();
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function showNotification(title, options) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, options || {});
+            }
+        }
+
+        function notifyNewMessage(maidName, messageText) {
+            if (currentChatMaidId === null || document.hidden) {
+                showNotification('Novoe soobshenie ot ' + maidName, {
+                    body: messageText.substring(0, 100),
+                    tag: 'chat-' + maidName
+                });
+            }
+        }
+
+        function updatePropertySelect() {
+            const select = document.getElementById('propertySelect');
+            select.innerHTML = '';
+            properties.forEach(property => {
+                const option = document.createElement('option');
+                option.value = property.id;
+                option.textContent = property.name;
+                if (property.id === currentPropertyId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        function openPropertyManagement() {
+            renderPropertiesManagementList();
+            openModal('propertyManagementModal');
+        }
+
+        function renderPropertiesManagementList() {
+            const container = document.getElementById('propertiesManagementList');
+            
+            if (properties.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏠</div>
+                        <p>Объектов пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = properties.map(property => {
+                const tasksCount = tasks.filter(t => t.propertyId === property.id).length;
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${property.name}</div>
+                                <div class="card-subtitle">${property.address}</div>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 12px; color: var(--color-text-secondary); font-size: var(--font-size-sm);">Заданий: ${tasksCount}</p>
+                        <button class="btn btn-secondary btn-full" onclick="editProperty(${property.id})">✏️ Редактировать</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openAddPropertyModal() {
+            closeModal('propertyManagementModal');
+            openModal('addPropertyModal');
+        }
+
+        function addProperty(event) {
+            event.preventDefault();
+            const property = {
+                id: nextPropertyId++,
+                name: document.getElementById('propertyName').value,
+                address: document.getElementById('propertyAddress').value
+            };
+
+            properties.push(property);
+            updatePropertySelect();
+            renderPropertiesManagementList();
+            closeModal('addPropertyModal');
+            openModal('propertyManagementModal');
+            event.target.reset();
+            saveToLocalStorage();
+        }
+
+        function editProperty(propertyId) {
+            const property = properties.find(p => p.id === propertyId);
+            if (!property) return;
+
+            document.getElementById('editPropertyId').value = property.id;
+            document.getElementById('editPropertyName').value = property.name;
+            document.getElementById('editPropertyAddress').value = property.address;
+            
+            closeModal('propertyManagementModal');
+            openModal('editPropertyModal');
+        }
+
+        function savePropertyEdit(event) {
+            event.preventDefault();
+            const propertyId = parseInt(document.getElementById('editPropertyId').value);
+            const property = properties.find(p => p.id === propertyId);
+            
+            if (!property) return;
+
+            property.name = document.getElementById('editPropertyName').value;
+            property.address = document.getElementById('editPropertyAddress').value;
+
+            updatePropertySelect();
+            renderPropertiesManagementList();
+            closeModal('editPropertyModal');
+            openModal('propertyManagementModal');
+            saveToLocalStorage();
+        }
+
+        function deleteProperty() {
+            const propertyId = parseInt(document.getElementById('editPropertyId').value);
+            
+            const propertyTasks = tasks.filter(t => t.propertyId === propertyId).length;
+            const confirmMessage = propertyTasks > 0 
+                ? `У этого объекта есть ${propertyTasks} заданий. Удалить объект вместе со всеми заданиями?`
+                : 'Удалить этот объект?';
+            
+            if (confirm(confirmMessage)) {
+                properties = properties.filter(p => p.id !== propertyId);
+                tasks = tasks.filter(t => t.propertyId !== propertyId);
+                supplies = supplies.filter(s => s.propertyId !== propertyId);
+                
+                if (currentPropertyId === propertyId) {
+                    currentPropertyId = properties.length > 0 ? properties[0].id : null;
+                }
+
+                updatePropertySelect();
+                renderPropertiesManagementList();
+                renderTasks();
+                renderSupplies();
+                closeModal('editPropertyModal');
+                
+                if (properties.length > 0) {
+                    openModal('propertyManagementModal');
+                } else {
+                    closeModal('propertyManagementModal');
+                }
+                saveToLocalStorage();
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openNewTaskModal() {
+            openModal('taskModal');
+        }
+
+        function openNewMaidModal() {
+            openModal('maidModal');
+        }
+
+        function openNewChecklistModal() {
+            openModal('checklistModal');
+        }
+
+        function openNewSupplyModal() {
+            openModal('supplyModal');
+        }
+
+        function createTask(event) {
+            event.preventDefault();
+            const task = {
+                id: Date.now(),
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                maidId: parseInt(document.getElementById('taskMaid').value),
+                checklistId: parseInt(document.getElementById('taskChecklist').value) || null,
+                status: 'pending',
+                propertyId: currentPropertyId,
+                createdAt: new Date(),
+                media: []
+            };
+
+            tasks.unshift(task);
+            renderTasks();
+            closeModal('taskModal');
+            event.target.reset();
+            saveToLocalStorage();
+        }
+
+        function addMaid(event) {
+            event.preventDefault();
+            const maid = {
+                id: Date.now(),
+                name: document.getElementById('maidName').value,
+                phone: document.getElementById('maidPhone').value
+            };
+
+            maids.push(maid);
+            updateMaidSelect();
+            updateChatMaidSelect();
+            renderMaids();
+            closeModal('maidModal');
+            event.target.reset();
+            saveToLocalStorage();
+        }
+
+        function createChecklist(event) {
+            event.preventDefault();
+            const itemsText = document.getElementById('checklistItems').value;
+            const items = itemsText.split('\n').filter(item => item.trim() !== '');
+
+            const checklist = {
+                id: Date.now(),
+                name: document.getElementById('checklistName').value,
+                items: items
+            };
+
+            checklists.push(checklist);
+            updateChecklistSelect();
+            renderChecklists();
+            closeModal('checklistModal');
+            event.target.reset();
+            saveToLocalStorage();
+        }
+
+        function updateMaidSelect() {
+            const select = document.getElementById('taskMaid');
+            select.innerHTML = '<option value="">Выберите горничную</option>';
+            maids.forEach(maid => {
+                const option = document.createElement('option');
+                option.value = maid.id;
+                option.textContent = maid.name;
+                select.appendChild(option);
+            });
+        }
+
+        function updateChecklistSelect() {
+            const select = document.getElementById('taskChecklist');
+            select.innerHTML = '<option value="">Без чек-листа</option>';
+            checklists.forEach(checklist => {
+                const option = document.createElement('option');
+                option.value = checklist.id;
+                option.textContent = checklist.name;
+                select.appendChild(option);
+            });
+        }
+
+        function updateSupplyMaidSelect() {
+            const select = document.getElementById('supplyMaid');
+            select.innerHTML = '<option value="">Выберите горничную</option>';
+            maids.forEach(maid => {
+                const option = document.createElement('option');
+                option.value = maid.id;
+                option.textContent = maid.name;
+                select.appendChild(option);
+            });
+        }
+
+        function addSupply(event) {
+            event.preventDefault();
+            const supply = {
+                id: Date.now(),
+                name: document.getElementById('supplyName').value,
+                quantity: parseInt(document.getElementById('supplyQuantity').value),
+                propertyId: currentPropertyId,
+                maidId: parseInt(document.getElementById('supplyMaid').value),
+                status: 'pending',
+                note: document.getElementById('supplyNote').value,
+                createdAt: new Date()
+            };
+
+            supplies.unshift(supply);
+            renderSupplies();
+            closeModal('supplyModal');
+            event.target.reset();
+            saveToLocalStorage();
+        }
+
+        function markSupplyPurchased(supplyId) {
+            const supply = supplies.find(s => s.id === supplyId);
+            if (supply) {
+                supply.status = 'purchased';
+                supply.purchasedAt = new Date();
+                renderSupplies();
+                saveToLocalStorage();
+            }
+        }
+
+        function deleteSupply(supplyId) {
+            if (confirm('Удалить этот расходник из списка?')) {
+                supplies = supplies.filter(s => s.id !== supplyId);
+                renderSupplies();
+                saveToLocalStorage();
+            }
+        }
+
+        function renderSupplies() {
+            const container = document.getElementById('suppliesList');
+            const propertySupplies = supplies.filter(s => s.propertyId === currentPropertyId);
+            
+            if (propertySupplies.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🛒</div>
+                        <p>Список расходников пуст</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const pendingSupplies = propertySupplies.filter(s => s.status === 'pending');
+            const purchasedSupplies = propertySupplies.filter(s => s.status === 'purchased');
+
+            let html = '';
+
+            if (pendingSupplies.length > 0) {
+                html += '<h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: 12px; color: var(--color-text);">🛍️ Нужно купить</h3>';
+                html += pendingSupplies.map(supply => {
+                    const maid = maids.find(m => m.id === supply.maidId);
+                    return `
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">${supply.name}</div>
+                                    <div class="card-subtitle">Количество: ${supply.quantity} • ${maid ? maid.name : 'Неизвестно'}</div>
+                                </div>
+                                <span class="status-badge status-pending">Не куплено</span>
+                            </div>
+                            ${supply.note ? `<p style="margin-bottom: 12px; color: var(--color-text-secondary); font-size: var(--font-size-sm);">📝 ${supply.note}</p>` : ''}
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary" onclick="markSupplyPurchased(${supply.id})" style="flex: 1;">✓ Куплено</button>
+                                <button class="btn btn-secondary" onclick="deleteSupply(${supply.id})">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (purchasedSupplies.length > 0) {
+                html += '<h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin: 20px 0 12px 0; color: var(--color-text);">✅ Куплено</h3>';
+                html += purchasedSupplies.map(supply => {
+                    const maid = maids.find(m => m.id === supply.maidId);
+                    return `
+                        <div class="card" style="opacity: 0.7;">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">${supply.name}</div>
+                                    <div class="card-subtitle">Количество: ${supply.quantity} • ${maid ? maid.name : 'Неизвестно'}</div>
+                                </div>
+                                <span class="status-badge status-completed">Куплено</span>
+                            </div>
+                            <button class="btn btn-secondary btn-full" onclick="deleteSupply(${supply.id})">Удалить из списка</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            container.innerHTML = html;
+        }
+
+        function switchProperty() {
+            const selectedId = parseInt(document.getElementById('propertySelect').value);
+            if (selectedId && properties.find(p => p.id === selectedId)) {
+                currentPropertyId = selectedId;
+                renderTasks();
+                renderSupplies();
+                saveToLocalStorage();
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            let propertyTasks = tasks.filter(t => t.propertyId === currentPropertyId);
+            
+            if (userRole === 'maid') {
+                const maidId = parseInt(localStorage.getItem('currentMaidId'));
+                propertyTasks = tasks.filter(t => t.maidId === maidId);
+            }
+            
+            if (propertyTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>Заданий пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = propertyTasks.map(task => {
+                const maid = maids.find(m => m.id === task.maidId);
+                const statusText = task.status === 'pending' ? 'Ожидает' : 
+                                  task.status === 'progress' ? 'В процессе' : 'Завершено';
+                const statusClass = `status-${task.status}`;
+
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${task.title}</div>
+                                <div class="card-subtitle">${maid ? maid.name : 'Не назначено'}</div>
+                            </div>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        ${task.description ? `<p style="margin-bottom: 12px; color: var(--color-text-secondary); font-size: var(--font-size-sm);">${task.description}</p>` : ''}
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="openTaskDetail(${task.id})" style="flex: 1;">Открыть</button>
+                            ${task.status !== 'completed' ? `<button class="btn btn-primary" onclick="completeTask(${task.id})">Завершить</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMaids() {
+            const container = document.getElementById('maidsList');
+            
+            if (maids.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p>Горничных пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = maids.map(maid => {
+                const tasksCount = tasks.filter(t => t.maidId === maid.id && t.propertyId === currentPropertyId && t.status !== 'completed').length;
+                return `
+                    <div class="maid-item">
+                        <div class="maid-info">
+                            <div class="maid-avatar">${maid.name.charAt(0)}</div>
+                            <div class="maid-details">
+                                <h3>${maid.name}</h3>
+                                <p>${tasksCount} активных задач</p>
+                            </div>
+                        </div>
+                        <button class="message-btn" onclick="sendMessage(${maid.id})">✉️ Написать</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderChecklists() {
+            const container = document.getElementById('checklistsList');
+            
+            if (checklists.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✓</div>
+                        <p>Чек-листов пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = checklists.map(checklist => `
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${checklist.name}</div>
+                            <div class="card-subtitle">${checklist.items.length} пунктов</div>
+                        </div>
+                    </div>
+                    <ul class="task-list">
+                        ${checklist.items.slice(0, 3).map(item => `
+                            <li class="task-item">
+                                <span class="task-text">✓ ${item}</span>
+                            </li>
+                        `).join('')}
+                        ${checklist.items.length > 3 ? `<li class="task-item"><span class="task-text" style="color: var(--color-text-secondary);">+ ещё ${checklist.items.length - 3}</span></li>` : ''}
+                    </ul>
+                    <button class="btn btn-secondary btn-full" onclick="editChecklist(${checklist.id})" style="margin-top: 12px;">✏️ Редактировать</button>
+                </div>
+            `).join('');
+        }
+
+        function openTaskDetail(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const maid = maids.find(m => m.id === task.maidId);
+            const checklist = task.checklistId ? checklists.find(c => c.id === task.checklistId) : null;
+
+            document.getElementById('detailTaskTitle').textContent = task.title;
+            
+            let checklistHTML = '';
+            if (checklist) {
+                checklistHTML = `
+                    <div style="margin-top: 16px;">
+                        <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: 12px;">Чек-лист: ${checklist.name}</h3>
+                        <ul class="task-list">
+                            ${checklist.items.map((item, index) => {
+                                const itemMedia = task.media.filter(m => m.checklistItemIndex === index);
+                                return `
+                                <li class="task-item" style="flex-direction: column; align-items: flex-start;">
+                                    <div style="display: flex; align-items: flex-start; width: 100%;">
+                                        <input type="checkbox" class="checkbox" id="check-${taskId}-${index}" onchange="updateTaskProgress(${taskId})">
+                                        <label for="check-${taskId}-${index}" class="task-text">${item}</label>
+                                        <button class="btn btn-secondary" onclick="openChecklistItemMedia(${taskId}, ${index})" style="padding: 4px 8px; font-size: 12px; margin-left: auto;">📷 ${itemMedia.length > 0 ? itemMedia.length : ''}</button>
+                                    </div>
+                                    ${itemMedia.length > 0 ? `
+                                        <div style="margin-top: 8px; margin-left: 32px; display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 4px;">
+                                            ${itemMedia.map(media => `
+                                                <div style="position: relative; width: 100%; padding-top: 100%; border-radius: 4px; overflow: hidden; background-color: var(--color-secondary);">
+                                                    ${media.type === 'image' ? 
+                                                        `<img src="${media.url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Фото">` : 
+                                                        `<video src="${media.url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></video>`
+                                                    }
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                </li>
+                            `}).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            let mediaHTML = '';
+            if (task.media && task.media.length > 0) {
+                mediaHTML = `
+                    <div style="margin-top: 16px;">
+                        <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: 12px;">Фото и видео (${task.media.length})</h3>
+                        <div class="media-preview">
+                            ${task.media.map(media => `
+                                <div class="media-item">
+                                    ${media.type === 'image' ? 
+                                        `<img src="${media.url}" alt="Фото">` : 
+                                        `<video src="${media.url}" controls></video>`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('taskDetailContent').innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">Горничная: ${maid ? maid.name : 'Не назначено'}</p>
+                    ${task.description ? `<p style="margin-top: 8px; color: var(--color-text);">${task.description}</p>` : ''}
+                </div>
+                ${checklistHTML}
+                ${mediaHTML}
+                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="openMediaUpload(${taskId})" style="flex: 1;">📷 Добавить фото/видео</button>
+                    ${task.status !== 'completed' ? `<button class="btn btn-primary" onclick="completeTask(${taskId}); closeModal('taskDetailModal');">Завершить</button>` : ''}
+                </div>
+            `;
+
+            openModal('taskDetailModal');
+        }
+
+        function updateTaskProgress(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const checklist = checklists.find(c => c.id === task.checklistId);
+            if (!checklist) return;
+
+            const checkboxes = document.querySelectorAll(`input[id^="check-${taskId}-"]`);
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            if (checkedCount > 0 && task.status === 'pending') {
+                task.status = 'progress';
+                renderTasks();
+                saveToLocalStorage();
+            }
+        }
+
+        function completeTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = 'completed';
+                renderTasks();
+                saveToLocalStorage();
+            }
+        }
+
+        function sendMessage(maidId) {
+            const maid = maids.find(m => m.id === maidId);
+            if (maid) {
+                alert(`Отправка сообщения для ${maid.name}.\nВ полной версии приложения здесь будет встроенный чат или интеграция с мессенджером.`);
+            }
+        }
+
+        function openMediaUpload(taskId) {
+            currentMediaTaskId = taskId;
+            closeModal('taskDetailModal');
+            openModal('mediaModal');
+        }
+
+        function previewMedia() {
+            const files = document.getElementById('mediaFiles').files;
+            const preview = document.getElementById('mediaPreview');
+            preview.innerHTML = '';
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const mediaType = file.type.startsWith('image/') ? 'image' : 'video';
+                    const item = document.createElement('div');
+                    item.className = 'media-item';
+                    
+                    if (mediaType === 'image') {
+                        item.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    } else {
+                        item.innerHTML = `<video src="${e.target.result}"></video>`;
+                    }
+                    
+                    preview.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function capturePhoto() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.playsInline = true;
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 90%; width: 500px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Сделать фото</h2>
+                            <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        </div>
+                        <div style="position: relative; background: black; border-radius: 8px; overflow: hidden;">
+                            <video id="cameraVideo" autoplay playsinline style="width: 100%; display: block;"></video>
+                            <canvas id="cameraCanvas" style="display: none;"></canvas>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="takePhoto()" style="margin-top: 16px;">📷 Снять</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                document.getElementById('cameraVideo').srcObject = stream;
+                
+                window.currentCameraStream = stream;
+            } catch (error) {
+                alert('Не удалось получить доступ к камере. Убедитесь, что вы дали разрешение на использование камеры.');
+            }
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            canvas.toBlob((blob) => {
+                const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('mediaFiles').files = dataTransfer.files;
+                
+                previewMedia();
+                
+                if (window.currentCameraStream) {
+                    window.currentCameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                document.querySelector('.modal.active').remove();
+            }, 'image/jpeg', 0.9);
+        }
+
+        async function captureVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' },
+                    audio: true
+                });
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 90%; width: 500px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Снять видео</h2>
+                            <button class="close-btn" onclick="stopVideoRecording(true)">&times;</button>
+                        </div>
+                        <div style="position: relative; background: black; border-radius: 8px; overflow: hidden;">
+                            <video id="recordVideo" autoplay playsinline style="width: 100%; display: block;"></video>
+                        </div>
+                        <div style="margin-top: 16px; text-align: center;">
+                            <span id="recordingTime" style="font-size: 18px; font-weight: bold; color: var(--color-error);">00:00</span>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="startVideoRecording()" id="startRecordBtn" style="margin-top: 8px;">🎥 Начать запись</button>
+                        <button class="btn btn-secondary btn-full hidden" onclick="stopVideoRecording()" id="stopRecordBtn" style="margin-top: 8px;">⏹ Остановить</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                document.getElementById('recordVideo').srcObject = stream;
+                
+                window.currentCameraStream = stream;
+            } catch (error) {
+                alert('Не удалось получить доступ к камере и микрофону. Убедитесь, что вы дали разрешение.');
+            }
+        }
+
+        let mediaRecorder;
+        let recordedChunks = [];
+        let recordingInterval;
+
+        function startVideoRecording() {
+            recordedChunks = [];
+            
+            const options = { mimeType: 'video/webm;codecs=vp9' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options.mimeType = 'video/webm';
+            }
+            
+            mediaRecorder = new MediaRecorder(window.currentCameraStream, options);
+            
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+            
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const file = new File([blob], `video_${Date.now()}.webm`, { type: 'video/webm' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('mediaFiles').files = dataTransfer.files;
+                
+                previewMedia();
+                
+                if (window.currentCameraStream) {
+                    window.currentCameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                clearInterval(recordingInterval);
+                document.querySelector('.modal.active').remove();
+            };
+            
+            mediaRecorder.start();
+            
+            document.getElementById('startRecordBtn').classList.add('hidden');
+            document.getElementById('stopRecordBtn').classList.remove('hidden');
+            
+            let seconds = 0;
+            recordingInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('recordingTime').textContent = 
+                    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopVideoRecording(cancel = false) {
+            if (cancel) {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    recordedChunks = [];
+                }
+                if (window.currentCameraStream) {
+                    window.currentCameraStream.getTracks().forEach(track => track.stop());
+                }
+                clearInterval(recordingInterval);
+                document.querySelector('.modal.active')?.remove();
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+            }
+        }
+
+        let currentChecklistItemIndex = null;
+        let cameraStream = null;
+        let currentFacingMode = 'environment';
+
+        function uploadMedia(event) {
+            event.preventDefault();
+            const files = document.getElementById('mediaFiles').files;
+            
+            if (files.length === 0 || !currentMediaTaskId) return;
+
+            const task = tasks.find(t => t.id === currentMediaTaskId);
+            if (!task) return;
+
+            if (!task.media) task.media = [];
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const mediaType = file.type.startsWith('image/') ? 'image' : 'video';
+                    task.media.push({
+                        type: mediaType,
+                        url: e.target.result,
+                        timestamp: new Date(),
+                        checklistItemIndex: currentChecklistItemIndex
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+
+            setTimeout(() => {
+                renderTasks();
+                closeModal('mediaModal');
+                document.getElementById('mediaFiles').value = '';
+                document.getElementById('mediaPreview').innerHTML = '';
+                openTaskDetail(currentMediaTaskId);
+                currentMediaTaskId = null;
+                currentChecklistItemIndex = null;
+            }, 500);
+        }
+
+        function openChecklistItemMedia(taskId, itemIndex) {
+            currentMediaTaskId = taskId;
+            currentChecklistItemIndex = itemIndex;
+            openModal('mediaModal');
+        }
+
+        async function capturePhoto() {
+            try {
+                const video = document.getElementById('cameraPreview');
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode },
+                    audio: false
+                });
+                video.srcObject = cameraStream;
+                openModal('cameraModal');
+                document.getElementById('cameraModalTitle').textContent = '📷 Сделать фото';
+            } catch (error) {
+                alert('Не удалось получить доступ к камере: ' + error.message);
+            }
+        }
+
+        async function captureVideo() {
+            alert('Функция записи видео будет добавлена в следующей версии');
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob(blob => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const task = tasks.find(t => t.id === currentMediaTaskId);
+                    if (task) {
+                        if (!task.media) task.media = [];
+                        task.media.push({
+                            type: 'image',
+                            url: e.target.result,
+                            timestamp: new Date(),
+                            checklistItemIndex: currentChecklistItemIndex
+                        });
+                        saveToLocalStorage();
+                        closeCameraModal();
+                        closeModal('mediaModal');
+                        openTaskDetail(currentMediaTaskId);
+                    }
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.9);
+        }
+
+        async function switchCamera() {
+            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            await capturePhoto();
+        }
+
+        function closeCameraModal() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            closeModal('cameraModal');
+        }
+
+        function editChecklist(checklistId) {
+            const checklist = checklists.find(c => c.id === checklistId);
+            if (!checklist) return;
+
+            document.getElementById('editChecklistId').value = checklist.id;
+            document.getElementById('editChecklistName').value = checklist.name;
+            document.getElementById('editChecklistItems').value = checklist.items.join('\n');
+            
+            openModal('editChecklistModal');
+        }
+
+        function saveChecklistEdit(event) {
+            event.preventDefault();
+            const checklistId = parseInt(document.getElementById('editChecklistId').value);
+            const checklist = checklists.find(c => c.id === checklistId);
+            
+            if (!checklist) return;
+
+            const itemsText = document.getElementById('editChecklistItems').value;
+            const items = itemsText.split('\n').filter(item => item.trim() !== '');
+
+            checklist.name = document.getElementById('editChecklistName').value;
+            checklist.items = items;
+
+            updateChecklistSelect();
+            renderChecklists();
+            closeModal('editChecklistModal');
+        }
+
+        function deleteChecklist() {
+            const checklistId = parseInt(document.getElementById('editChecklistId').value);
+            
+            if (confirm('Удалить этот чек-лист? Это действие нельзя отменить.')) {
+                checklists = checklists.filter(c => c.id !== checklistId);
+                
+                tasks.forEach(task => {
+                    if (task.checklistId === checklistId) {
+                        task.checklistId = null;
+                    }
+                });
+
+                updateChecklistSelect();
+                renderChecklists();
+                closeModal('editChecklistModal');
+            }
+        }
+
+        function showStats() {
+            const property = properties.find(p => p.id === currentPropertyId);
+            const propertyTasks = tasks.filter(t => t.propertyId === currentPropertyId);
+            const propertySupplies = supplies.filter(s => s.propertyId === currentPropertyId && s.status === 'pending');
+            const totalTasks = propertyTasks.length;
+            const completedTasks = propertyTasks.filter(t => t.status === 'completed').length;
+            const pendingTasks = propertyTasks.filter(t => t.status === 'pending').length;
+            const progressTasks = propertyTasks.filter(t => t.status === 'progress').length;
+
+            alert(`📊 Статистика: ${property.name}\n` +
+                  `${property.address}\n\n` +
+                  `Всего заданий: ${totalTasks}\n` +
+                  `Завершено: ${completedTasks}\n` +
+                  `В процессе: ${progressTasks}\n` +
+                  `Ожидает: ${pendingTasks}\n` +
+                  `Нужно купить: ${propertySupplies.length} позиций\n\n` +
+                  `Общая информация:\n` +
+                  `Объектов: ${properties.length}\n` +
+                  `Горничных: ${maids.length}\n` +
+                  `Чек-листов: ${checklists.length}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'cleantrack-v1';
+                    const urlsToCache = ['/'];
+
+                    self.addEventListener('install', (event) => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then((cache) => cache.addAll(urlsToCache))
+                        );
+                    });
+
+                    self.addEventListener('fetch', (event) => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then((response) => response || fetch(event.request))
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then((registration) => {
+                        console.log('Service Worker зарегистрирован:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Ошибка регистрации Service Worker:', error);
+                    });
+            });
+        }
+
+        // ========== LocalStorage Functions ==========
+        const STORAGE_KEYS = {
+            tasks: 'cleantrack_tasks',
+            maids: 'cleantrack_maids',
+            checklists: 'cleantrack_checklists',
+            supplies: 'cleantrack_supplies',
+            messages: 'cleantrack_messages',
+            properties: 'cleantrack_properties',
+            nextPropertyId: 'cleantrack_nextPropertyId',
+            currentPropertyId: 'cleantrack_currentPropertyId'
+        };
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.tasks, JSON.stringify(tasks));
+                localStorage.setItem(STORAGE_KEYS.maids, JSON.stringify(maids));
+                localStorage.setItem(STORAGE_KEYS.checklists, JSON.stringify(checklists));
+                localStorage.setItem(STORAGE_KEYS.supplies, JSON.stringify(supplies));
+                localStorage.setItem(STORAGE_KEYS.messages, JSON.stringify(messages));
+                localStorage.setItem(STORAGE_KEYS.properties, JSON.stringify(properties));
+                localStorage.setItem(STORAGE_KEYS.nextPropertyId, JSON.stringify(nextPropertyId));
+                localStorage.setItem(STORAGE_KEYS.currentPropertyId, JSON.stringify(currentPropertyId));
+            } catch (e) {
+                console.error('Ошибка при сохранении в LocalStorage:', e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const savedTasks = localStorage.getItem(STORAGE_KEYS.tasks);
+                const savedMaids = localStorage.getItem(STORAGE_KEYS.maids);
+                const savedChecklists = localStorage.getItem(STORAGE_KEYS.checklists);
+                const savedSupplies = localStorage.getItem(STORAGE_KEYS.supplies);
+                const savedMessages = localStorage.getItem(STORAGE_KEYS.messages);
+                const savedProperties = localStorage.getItem(STORAGE_KEYS.properties);
+                const savedNextPropertyId = localStorage.getItem(STORAGE_KEYS.nextPropertyId);
+                const savedCurrentPropertyId = localStorage.getItem(STORAGE_KEYS.currentPropertyId);
+
+                if (savedTasks) tasks = JSON.parse(savedTasks);
+                if (savedMaids) maids = JSON.parse(savedMaids);
+                if (savedChecklists) checklists = JSON.parse(savedChecklists);
+                if (savedSupplies) supplies = JSON.parse(savedSupplies);
+                if (savedMessages) messages = JSON.parse(savedMessages);
+                if (savedProperties) properties = JSON.parse(savedProperties);
+                if (savedNextPropertyId) nextPropertyId = JSON.parse(savedNextPropertyId);
+                if (savedCurrentPropertyId) currentPropertyId = JSON.parse(savedCurrentPropertyId);
+
+                return true;
+            } catch (e) {
+                console.error('Ошибка при загружке из LocalStorage:', e);
+                return false;
+            }
+        }
+
+        function clearLocalStorage() {
+            try {
+                Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+            } catch (e) {
+                console.error('Ошибка при очистке LocalStorage:', e);
+            }
+        }
+        // ========== End LocalStorage Functions ==========
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            const installBanner = document.createElement('div');
+            installBanner.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--color-primary);
+                color: var(--color-btn-primary-text);
+                padding: 12px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 1001;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                max-width: 90%;
+                animation: slideUp 0.3s ease;
+            `;
+            installBanner.innerHTML = `
+                <span style="flex: 1;">Установить CleanTrack как приложение?</span>
+                <button onclick="installApp()" style="background: rgba(255,255,255,0.2); border: none; color: inherit; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Установить</button>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; padding: 8px; cursor: pointer; font-size: 20px; line-height: 1;">&times;</button>
+            `;
+            document.body.appendChild(installBanner);
+        });
+
+        window.installApp = async function() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('Приложение установлено');
+            }
+            
+            deferredPrompt = null;
+            document.querySelector('[onclick="installApp()"]')?.closest('div')?.remove();
+        };
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        window.onload = function() {
+            loadFromLocalStorage();
+            checkAuth();
+        };
+    </script>
+</body>
+</html>
