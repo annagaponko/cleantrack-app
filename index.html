@@ -674,6 +674,7 @@
             <button class="tab" onclick="switchTab('checklists')">Чек-листы</button>
             <button class="tab" onclick="switchTab('supplies')">Расходники</button>
             <button class="tab" onclick="switchTab('chat')">💬 Чат<span id="chatNotificationBadge" class="notification-badge" style="display: none;">0</span></button>
+            <button class="tab" onclick="switchTab('locks')">🔐 Замки<span id="lockNotificationBadge" class="notification-badge" style="display: none;">0</span></button>
         </div>
 
         <div class="content">
@@ -712,6 +713,59 @@
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="chatInput" class="form-control" placeholder="Введите сообщение..." onkeypress="handleChatKeypress(event)" style="flex: 1;">
                         <button class="btn btn-primary" onclick="sendChatMessage()" style="padding: 8px 16px;">Отправить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="locks-tab" class="tab-content hidden">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Lock Settings Section -->
+                    <div class="card" style="padding: 16px;">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">⚡ Настройки TTLock</h3>
+                        <div id="lockSettingsForm">
+                            <div class="form-group">
+                                <label class="form-label">Client ID</label>
+                                <input type="text" id="ttlockClientId" class="form-control" value="0f4b7a67707a47db85846813bc95773d" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Secret</label>
+                                <input type="password" id="ttlockClientSecret" class="form-control" placeholder="Введите client secret">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">TTLock Username</label>
+                                <input type="text" id="ttlockUsername" class="form-control" placeholder="Ваш логин в TTLock">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">TTLock Password</label>
+                                <input type="password" id="ttlockPassword" class="form-control" placeholder="Ваш пароль в TTLock">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary" onclick="saveTTLockSettings()" style="flex: 1;">🔑 Сохранить</button>
+                                <button class="btn btn-secondary" onclick="testTTLockConnection()" style="flex: 1;">✅ Проверить</button>
+                            </div>
+                            <div id="ttlockStatus" style="margin-top: 12px; padding: 12px; border-radius: 8px; display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lock Mapping Section -->
+                    <div class="card" style="padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="font-size: 16px;">🚪 Привязка замков</h3>
+                            <button class="btn btn-primary" onclick="openAddLockModal()" style="padding: 6px 12px; font-size: 12px;">+ Добавить</button>
+                        </div>
+                        <div id="lockMappingList"></div>
+                    </div>
+
+                    <!-- Lock Notifications Section -->
+                    <div class="card" style="padding: 16px;">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">🔔 Последние события</h3>
+                        <div id="lockNotificationsList"></div>
+                    </div>
+
+                    <!-- Lock History Section -->
+                    <div class="card" style="padding: 16px;">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">📊 История открытий</h3>
+                        <div id="lockHistoryList"></div>
                     </div>
                 </div>
             </div>
@@ -947,6 +1001,36 @@
         </div>
     </div>
 
+    <div id="addLockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить замок</h2>
+                <button class="close-btn" onclick="closeModal('addLockModal')">&times;</button>
+            </div>
+            <form onsubmit="addLockMapping(event)">
+                <div class="form-group">
+                    <label class="form-label">Lock ID</label>
+                    <input type="number" class="form-control" id="lockId" required placeholder="123456">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Название замка</label>
+                    <input type="text" class="form-control" id="lockName" required placeholder="Квартира 15">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Адрес объекта</label>
+                    <input type="text" class="form-control" id="lockAddress" required placeholder="ул. Ленина 25">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Назначенная горничная</label>
+                    <select class="form-control" id="lockMaid" required>
+                        <option value="">Выберите горничную</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Добавить</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         let tasks = [];
         let maids = [];
@@ -954,6 +1038,10 @@
         let supplies = [];
         let messages = [];
         let mediaReports = [];
+        let lockMappings = [];
+        let lockEvents = [];
+        let ttlockConfig = null;
+        let lockPollingInterval = null;
         let currentMediaTaskId = null;
         let currentPropertyId = 1;
         let currentChatMaidId = null;
@@ -1487,6 +1575,10 @@
             
             event.target.classList.add('active');
             document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            
+            if (tabName === 'locks') {
+                loadLocksTab();
+            }
         }
 
         function openModal(modalId) {
@@ -2472,6 +2564,379 @@
             loadFromLocalStorage();
             checkAuth();
         };
+
+        // ========== TTLock Integration Functions ==========
+
+        function loadLocksTab() {
+            loadTTLockSettings();
+            renderLockMappings();
+            renderLockNotifications();
+            renderLockHistory();
+        }
+
+        function loadTTLockSettings() {
+            const config = JSON.parse(localStorage.getItem('ttlockConfig') || 'null');
+            if (config) {
+                ttlockConfig = config;
+                document.getElementById('ttlockClientSecret').value = config.clientSecret || '';
+                document.getElementById('ttlockUsername').value = config.username || '';
+                document.getElementById('ttlockPassword').value = config.password || '';
+                
+                if (config.accessToken && config.expiresAt > Date.now()) {
+                    showTTLockStatus('✅ Подключено к TTLock', 'success');
+                    startLockPolling();
+                }
+            }
+        }
+
+        async function saveTTLockSettings() {
+            const clientSecret = document.getElementById('ttlockClientSecret').value;
+            const username = document.getElementById('ttlockUsername').value;
+            const password = document.getElementById('ttlockPassword').value;
+            
+            if (!clientSecret || !username || !password) {
+                showTTLockStatus('⚠️ Заполните все поля', 'error');
+                return;
+            }
+            
+            showTTLockStatus('🔄 Авторизация...', 'info');
+            
+            try {
+                const passwordMd5 = await md5Hash(password);
+                const response = await fetch('https://api.sciener.com/oauth2/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        client_id: '0f4b7a67707a47db85846813bc95773d',
+                        client_secret: clientSecret,
+                        username: username,
+                        password: passwordMd5
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.access_token) {
+                    ttlockConfig = {
+                        clientId: '0f4b7a67707a47db85846813bc95773d',
+                        clientSecret: clientSecret,
+                        username: username,
+                        password: password,
+                        accessToken: data.access_token,
+                        refreshToken: data.refresh_token,
+                        expiresAt: Date.now() + (data.expires_in * 1000),
+                        uid: data.uid
+                    };
+                    
+                    localStorage.setItem('ttlockConfig', JSON.stringify(ttlockConfig));
+                    showTTLockStatus('✅ Успешно подключено!', 'success');
+                    startLockPolling();
+                } else {
+                    showTTLockStatus('❌ Ошибка: ' + (data.description || 'Неверные данные'), 'error');
+                }
+            } catch (error) {
+                showTTLockStatus('❌ Ошибка подключения: ' + error.message, 'error');
+            }
+        }
+
+        async function testTTLockConnection() {
+            if (!ttlockConfig || !ttlockConfig.accessToken) {
+                showTTLockStatus('⚠️ Сначала сохраните настройки', 'error');
+                return;
+            }
+            
+            showTTLockStatus('🔄 Проверка подключения...', 'info');
+            
+            try {
+                const testLockId = lockMappings.length > 0 ? lockMappings[0].lockId : 0;
+                const response = await fetch(`https://api.sciener.com/v3/lockRecord/list?clientId=${ttlockConfig.clientId}&accessToken=${ttlockConfig.accessToken}&lockId=${testLockId}&pageNo=1&pageSize=1&date=${Date.now()}`);
+                const data = await response.json();
+                
+                if (data.errcode === 0 || response.ok) {
+                    showTTLockStatus('✅ Подключение работает!', 'success');
+                } else {
+                    showTTLockStatus('❌ Ошибка: ' + (data.description || 'Connection failed'), 'error');
+                }
+            } catch (error) {
+                showTTLockStatus('❌ Ошибка: ' + error.message, 'error');
+            }
+        }
+
+        function showTTLockStatus(message, type) {
+            const statusDiv = document.getElementById('ttlockStatus');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = type === 'success' ? 'var(--color-success)' : 
+                                             type === 'error' ? 'var(--color-error)' : 
+                                             'var(--color-primary)';
+            statusDiv.style.color = 'white';
+        }
+
+        function openAddLockModal() {
+            const lockMaidSelect = document.getElementById('lockMaid');
+            lockMaidSelect.innerHTML = '<option value="">Выберите горничную</option>';
+            maids.forEach(maid => {
+                const option = document.createElement('option');
+                option.value = maid.id;
+                option.textContent = maid.name;
+                lockMaidSelect.appendChild(option);
+            });
+            openModal('addLockModal');
+        }
+
+        function addLockMapping(event) {
+            event.preventDefault();
+            
+            const lockId = parseInt(document.getElementById('lockId').value);
+            const lockName = document.getElementById('lockName').value;
+            const lockAddress = document.getElementById('lockAddress').value;
+            const maidId = parseInt(document.getElementById('lockMaid').value);
+            
+            const maid = maids.find(m => m.id === maidId);
+            
+            const mapping = {
+                id: Date.now(),
+                lockId: lockId,
+                lockName: lockName,
+                address: lockAddress,
+                maidId: maidId,
+                maidName: maid ? maid.name : 'Неизвестно'
+            };
+            
+            lockMappings.push(mapping);
+            localStorage.setItem('lockMappings', JSON.stringify(lockMappings));
+            
+            closeModal('addLockModal');
+            renderLockMappings();
+            
+            document.getElementById('lockId').value = '';
+            document.getElementById('lockName').value = '';
+            document.getElementById('lockAddress').value = '';
+        }
+
+        function renderLockMappings() {
+            const list = document.getElementById('lockMappingList');
+            
+            if (lockMappings.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 16px; text-align: center; color: var(--color-text-secondary);">🚪 Добавьте замки для отслеживания</div>';
+                return;
+            }
+            
+            list.innerHTML = lockMappings.map(lock => `
+                <div class="card" style="padding: 12px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 4px;">🔐 ${lock.lockName}</div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px;">🏠 ${lock.address}</div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary);">🧙‍♀️ ${lock.maidName}</div>
+                            <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: 4px;">ID: ${lock.lockId}</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="deleteLockMapping(${lock.id})" style="padding: 4px 8px; font-size: 12px;">❌</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteLockMapping(id) {
+            if (confirm('Удалить этот замок?')) {
+                lockMappings = lockMappings.filter(l => l.id !== id);
+                localStorage.setItem('lockMappings', JSON.stringify(lockMappings));
+                renderLockMappings();
+            }
+        }
+
+        function startLockPolling() {
+            if (lockPollingInterval) {
+                clearInterval(lockPollingInterval);
+            }
+            
+            if (!ttlockConfig || !ttlockConfig.accessToken || lockMappings.length === 0) {
+                return;
+            }
+            
+            checkLockEvents();
+            lockPollingInterval = setInterval(checkLockEvents, 30000);
+        }
+
+        async function checkLockEvents() {
+            if (!ttlockConfig || !ttlockConfig.accessToken) return;
+            
+            const lastCheck = parseInt(localStorage.getItem('lastLockCheck') || '0');
+            const now = Date.now();
+            
+            for (const lock of lockMappings) {
+                try {
+                    const response = await fetch(`https://api.sciener.com/v3/lockRecord/list?clientId=${ttlockConfig.clientId}&accessToken=${ttlockConfig.accessToken}&lockId=${lock.lockId}&startDate=${lastCheck}&endDate=${now}&pageNo=1&pageSize=20&date=${now}`);
+                    const data = await response.json();
+                    
+                    if (data.list && data.list.length > 0) {
+                        data.list.forEach(record => {
+                            if (record.success === 1 && record.lockDate > lastCheck) {
+                                const event = {
+                                    id: `evt_${record.lockDate}_${lock.lockId}`,
+                                    lockId: lock.lockId,
+                                    lockName: lock.lockName,
+                                    address: lock.address,
+                                    maidName: lock.maidName,
+                                    timestamp: record.lockDate,
+                                    recordType: record.recordType,
+                                    username: record.username || lock.maidName,
+                                    success: record.success,
+                                    read: false
+                                };
+                                
+                                if (!lockEvents.find(e => e.id === event.id)) {
+                                    lockEvents.unshift(event);
+                                    showLockNotification(event);
+                                }
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error checking lock events:', error);
+                }
+            }
+            
+            localStorage.setItem('lastLockCheck', now.toString());
+            localStorage.setItem('lockEvents', JSON.stringify(lockEvents));
+            updateLockBadge();
+            renderLockNotifications();
+            renderLockHistory();
+        }
+
+        function showLockNotification(event) {
+            const recordTypeText = {
+                1: 'Приложение',
+                3: 'Шлюз',
+                4: 'Код',
+                7: 'IC карта',
+                8: 'Отпечаток',
+                10: 'Ключ'
+            };
+            
+            const message = `🔓 Замок открыт!\n🧙‍♀️ ${event.maidName}\n🏠 ${event.lockName}\n📍 ${event.address}\n⏰ ${new Date(event.timestamp).toLocaleTimeString('ru-RU')}`;
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('🔐 CleanTrack - Замок открыт', {
+                    body: message,
+                    icon: '/cleantrack-app/icon-192.png',
+                    badge: '/cleantrack-app/icon-192.png'
+                });
+            }
+            
+            playNotificationSound();
+        }
+
+        function updateLockBadge() {
+            const unreadCount = lockEvents.filter(e => !e.read).length;
+            const badge = document.getElementById('lockNotificationBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderLockNotifications() {
+            const list = document.getElementById('lockNotificationsList');
+            const recentEvents = lockEvents.slice(0, 5);
+            
+            if (recentEvents.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 16px; text-align: center; color: var(--color-text-secondary);">🔔 Нет событий</div>';
+                return;
+            }
+            
+            list.innerHTML = recentEvents.map(event => `
+                <div class="card" style="padding: 12px; margin-bottom: 8px; ${!event.read ? 'border-left: 3px solid var(--color-primary);' : ''}">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 4px;">🔓 ${event.lockName}</div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px;">🧙‍♀️ ${event.maidName}</div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px;">🏠 ${event.address}</div>
+                            <div style="font-size: 11px; color: var(--color-text-secondary);">⏰ ${new Date(event.timestamp).toLocaleString('ru-RU')}</div>
+                        </div>
+                        ${!event.read ? '<span style="color: var(--color-primary); font-size: 20px;">•</span>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLockHistory() {
+            const list = document.getElementById('lockHistoryList');
+            
+            if (lockEvents.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 16px; text-align: center; color: var(--color-text-secondary);">📊 История пуста</div>';
+                return;
+            }
+            
+            list.innerHTML = lockEvents.map(event => `
+                <div class="card" style="padding: 10px; margin-bottom: 6px; font-size: 12px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div style="flex: 1;">
+                            <span style="font-weight: 600;">${event.lockName}</span> - ${event.maidName}
+                        </div>
+                        <div style="color: var(--color-text-secondary);">
+                            ${new Date(event.timestamp).toLocaleString('ru-RU', {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function md5Hash(string) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(string);
+            const hashBuffer = await crypto.subtle.digest('MD5', data).catch(() => {
+                return simpleHash(string);
+            });
+            if (hashBuffer instanceof ArrayBuffer) {
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            return hashBuffer;
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16).padStart(32, '0');
+        }
+
+        function playNotificationSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        window.addEventListener('load', () => {
+            lockMappings = JSON.parse(localStorage.getItem('lockMappings') || '[]');
+            lockEvents = JSON.parse(localStorage.getItem('lockEvents') || '[]');
+            updateLockBadge();
+            
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        });
+
     </script>
 </body>
 </html>
